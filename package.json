@@ -1,0 +1,11 @@
+{
+  "name": "payload-urdubit",
+  "version": "1.0.0",
+  "description": "An HTTP gateway to Payload's Urdubit account via Bitex's websockets API",
+  "main": "web.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
