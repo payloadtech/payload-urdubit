@@ -51,6 +51,19 @@ blinktrade
         // }).catch(function(err) {
         //   console.log(err);
         // });
+
+        blinktrade.requestWithdraw({
+            "amount": parseInt(1200 * 1e8),
+            "currency": "PKR",
+            "method": "BankIslami",
+            "data": {
+                "AccountName": "A Girl Is No One",
+                "AccountNumber": "123477",
+                "Fees": "2"
+            }
+        });
+
+
         app.listen(port, function() {
             console.log('HTTP server running');
         });
