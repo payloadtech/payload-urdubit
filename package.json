@@ -7,5 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "blinktrade": "0.0.2",
+    "express": "^4.14.0",
+    "heartbeats": "^3.1.5",
+    "request": "^2.78.0"
+  }
 }
