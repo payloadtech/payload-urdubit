@@ -1,3 +1,8 @@
+// Setup express
+var express = require('express');
+var app = express();
+var port = process.env.PORT || 3000;
+
 // Setup BlinkTrade
 var BlinkTrade = require('blinktrade');
 var BlinkTradeWS = BlinkTrade.BlinkTradeWS;
@@ -18,7 +23,7 @@ blinktrade
         return heart.createEvent(1, function(heartbeat, last) {
             blinktrade.heartbeat()
                 .then(function(beat) {
-                    console.log(beat.Latency);
+                    console.log('Beat ' + heart.age + ' took ' + beat.Latency + ' ms');
                 });
         });
     })
@@ -31,6 +36,36 @@ blinktrade
         });
     })
     .then(function(logged) {
-      console.log(logged);
+        // console.log(logged);
         console.log('logged in');
+
+
+        // blinktrade.sendOrder({
+        //     "side": "2", // Sell
+        //     "price": parseInt(1), // 1 PKR
+        //     "amount": parseInt((0.00505400 * 1e8).toFixed(0)),
+        //     "symbol": "BTCPKR",
+        // }).then(function(order) {
+        //   console.log(order);
+        //     // Sent
+        // }).catch(function(err) {
+        //   console.log(err);
+        // });
+        app.listen(port, function() {
+            console.log('HTTP server running');
+        });
     });
+
+
+
+// // just having some fun
+// app.get('/', function(req, res) {
+//     res.json({
+//         message: 'Wtf? Are you high?',
+//         status: '420'
+//     });
+// });
+
+// app.post('/trades', function(req, res) {
+//
+// })
