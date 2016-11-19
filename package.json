@@ -11,7 +11,7 @@
   "dependencies": {
     "blinktrade": "0.0.2",
     "express": "^4.14.0",
-    "heartbeats": "^3.1.5",
-    "request": "^2.78.0"
+    "heartbeats": "^5.0.1",
+    "request": "^2.79.0"
   }
 }
