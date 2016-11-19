@@ -23,7 +23,7 @@ blinktrade
         return heart.createEvent(1, function(heartbeat, last) {
             blinktrade.heartbeat()
                 .then(function(beat) {
-                    console.log('Beat ' + heart.age + ' took ' + beat.Latency + ' ms');
+                    console.log('Beat ' + heart.age + ' took ' + beat.Latency + ' ms to return');
                 });
         });
     })
