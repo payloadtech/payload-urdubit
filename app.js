@@ -29,7 +29,8 @@ require('winston-papertrail').Papertrail;
 
 var winstonPapertrail = new winston.transports.Papertrail({
   host: process.env.PAPERTRAIL_HOST,
-  port: process.env.PAPERTRAIL_PORT
+  port: process.env.PAPERTRAIL_PORT,
+  program: 'payload-urdubit'
 });
 
 winstonPapertrail.on('error', function(err) {
