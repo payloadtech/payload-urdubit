@@ -37,9 +37,19 @@ winstonPapertrail.on('error', function(err) {
   // Handle, report, or silently ignore connection errors and failures
 });
 
+if (process.env.NODE_ENV === 'production') {
+
 var logger = new winston.Logger({
   transports: [winstonPapertrail]
 });
+
+} else {
+  var logger = new winston.Logger({
+    level: 'info',
+    transports: [new (winston.transports.Console)()]
+  });
+
+}
 
 
 logger.info('Starting script');
