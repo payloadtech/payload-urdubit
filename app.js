@@ -17,7 +17,31 @@ var heart = heartbeats.createHeart(1000);
 // Setup Secret
 var secret = process.env.SECRET;
 
-console.log('Starting script');
+// Setup the logger
+
+var winston = require('winston');
+
+//
+// Requiring `winston-papertrail` will expose
+// `winston.transports.Papertrail`
+//
+require('winston-papertrail').Papertrail;
+
+var winstonPapertrail = new winston.transports.Papertrail({
+  host: process.env.PAPERTRAIL_HOST,
+  port: process.env.PAPERTRAIL_PORT
+});
+
+winstonPapertrail.on('error', function(err) {
+  // Handle, report, or silently ignore connection errors and failures
+});
+
+var logger = new winston.Logger({
+  transports: [winstonPapertrail]
+});
+
+
+logger.info('Starting script');
 
 
 // setup the express app
@@ -37,7 +61,7 @@ app.use(function(req, res, next) {
 
 app.post('/order', function(req, res) {
     var amount = req.body.amount;
-    console.log(amount);
+    logger.info(amount);
     // send an order
     blinktrade.sendOrder({
         "side": "2", // Sell
@@ -48,7 +72,7 @@ app.post('/order', function(req, res) {
         // respond with the order information
         res.json(order);
     }).catch(function(err) {
-        console.log(err);
+        logger.info(err);
     });
 });
 
@@ -67,7 +91,7 @@ blinktrade
         return heart.createEvent(1, function(heartbeat, last) {
             blinktrade.heartbeat()
                 .then(function(beat) {
-                    console.log('Beat ' + heart.age + ' took ' + beat.Latency + ' ms to return');
+                    logger.info('Beat ' + heart.age + ' took ' + beat.Latency + ' ms to return');
                 });
         });
     })
@@ -80,25 +104,25 @@ blinktrade
         });
     })
     .then(function(logged) {
-        // console.log(logged);
-        console.log('logged in');
+        // logger.info(logged);
+        logger.info('logged in');
 
         // listing to execution reports
         blinktrade.executionReport()
             .on("EXECUTION_REPORT:NEW", function(data) {
-                console.log(data);
+                logger.info(data);
             }).on("EXECUTION_REPORT:PARTIAL", function(data) {
-                console.log(data);
+                logger.info(data);
             }).on("EXECUTION_REPORT:EXECUTION", function(data) {
-                console.log(data);
+                logger.info(data);
             }).on("EXECUTION_REPORT:CANCELED", function(data) {
-                console.log(data);
+                logger.info(data);
             }).on("EXECUTION_REPORT:REJECTED", function(data) {
-                console.log(data);
+                logger.info(data);
             });
 
         app.listen(port, function() {
-            console.log('HTTP server running on PORT ' + port);
+            logger.info('HTTP server running on PORT ' + port);
         });
         // blinktrade.requestWithdraw({
         //     "amount": parseInt(1200 * 1e8),
@@ -113,5 +137,5 @@ blinktrade
         //
         //
     }).catch(function(err) {
-        console.error(err);
+        logger.error(err);
     });
