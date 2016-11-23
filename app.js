@@ -12,7 +12,7 @@ var blinktrade = new BlinkTradeWS({
 });
 
 var heartbeats = require('heartbeats');
-var heart = heartbeats.createHeart(1000);
+var heart = heartbeats.createHeart(20000);
 
 // Setup Secret
 var secret = process.env.SECRET;
