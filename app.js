@@ -4,6 +4,30 @@ var app = express();
 var bodyParser = require('body-parser')
 var port = process.env.PORT || 3000;
 
+// Setup request
+var request = require('request');
+var appWebhookUrl = 'https://app.payload.pk/notifications/urdubit';
+var appWebhookSecret = process.env.SECRET;
+
+var sendNotification = function sendNotification (type, object) {
+  // send a webhook to the app about a block being found
+  request({
+      url: appWebhookUrl,
+      method: 'POST',
+      qs: {
+        secret: appWebhookSecret
+      },
+      json: {
+        type: type,
+        payload: object
+      }
+  }, function(error, postResponse, body) {
+      if (error) logger.info(error);
+      logger.info(postResponse, 'Successfully contacted the app');
+  });
+
+};
+
 // Setup BlinkTrade
 var BlinkTrade = require('blinktrade');
 var BlinkTradeWS = BlinkTrade.BlinkTradeWS;
@@ -121,15 +145,16 @@ blinktrade
         // listing to execution reports
         blinktrade.executionReport()
             .on("EXECUTION_REPORT:NEW", function(data) {
-                logger.info(data);
+                logger.debug(data);
             }).on("EXECUTION_REPORT:PARTIAL", function(data) {
-                logger.info(data);
+                logger.debug(data);
             }).on("EXECUTION_REPORT:EXECUTION", function(data) {
                 logger.info(data);
+                sendNotification('EXECUTION_REPORT', data);
             }).on("EXECUTION_REPORT:CANCELED", function(data) {
-                logger.info(data);
+                logger.debug(data);
             }).on("EXECUTION_REPORT:REJECTED", function(data) {
-                logger.info(data);
+                logger.debug(data);
             });
 
         app.listen(port, function() {
