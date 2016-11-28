@@ -9,22 +9,22 @@ var request = require('request');
 var appWebhookUrl = 'https://app.payload.pk/notifications/urdubit';
 var appWebhookSecret = process.env.SECRET;
 
-var sendNotification = function sendNotification (type, object) {
-  // send a webhook to the app about a block being found
-  request({
-      url: appWebhookUrl,
-      method: 'POST',
-      qs: {
-        secret: appWebhookSecret
-      },
-      json: {
-        type: type,
-        payload: object
-      }
-  }, function(error, postResponse, body) {
-      if (error) logger.info(error);
-      logger.info(postResponse, 'Successfully contacted the app');
-  });
+var sendNotification = function sendNotification(type, object) {
+    // send a webhook to the app about a block being found
+    request({
+        url: appWebhookUrl,
+        method: 'POST',
+        qs: {
+            secret: appWebhookSecret
+        },
+        json: {
+            type: type,
+            payload: object
+        }
+    }, function(error, postResponse, body) {
+        if (error) logger.error(error);
+        logger.info(postResponse, 'Successfully contacted the app');
+    });
 
 };
 
@@ -52,26 +52,26 @@ var winston = require('winston');
 require('winston-papertrail').Papertrail;
 
 var winstonPapertrail = new winston.transports.Papertrail({
-  host: process.env.PAPERTRAIL_HOST,
-  port: process.env.PAPERTRAIL_PORT,
-  program: 'payload-urdubit'
+    host: process.env.PAPERTRAIL_HOST,
+    port: process.env.PAPERTRAIL_PORT,
+    program: 'payload-urdubit'
 });
 
 winstonPapertrail.on('error', function(err) {
-  // Handle, report, or silently ignore connection errors and failures
+    // Handle, report, or silently ignore connection errors and failures
 });
 
 if (process.env.NODE_ENV === 'production') {
 
-var logger = new winston.Logger({
-  transports: [winstonPapertrail]
-});
+    var logger = new winston.Logger({
+        transports: [winstonPapertrail]
+    });
 
 } else {
-  var logger = new winston.Logger({
-    level: 'info',
-    transports: [new (winston.transports.Console)()]
-  });
+    var logger = new winston.Logger({
+        level: 'info',
+        transports: [new(winston.transports.Console)()]
+    });
 
 }
 
@@ -111,6 +111,36 @@ app.post('/order', function(req, res) {
     });
 });
 
+app.post('/withdraw', function(req, res) {
+    var amount = req.body.amount;
+    var bankName = req.body.bank_name;
+    var accountNumber = req.body.account_number;
+    var accountTitle = req.body.account_title;
+    var cnicNumber = req.body.cnic_number;
+    var mobileNumber = req.body.mobile_number;
+    // withdrawal options
+    options = {
+        "amount": parseInt(amount * 1e8),
+        "currency": "PKR",
+        "method": "Other",
+        "data": {
+            "Name": accountTitle,
+            "AccountNumber": accountNumber,
+            "BankName": bankName,
+            "CNIC": cnicNumber,
+            "Mobile": mobileNumber
+        }
+    };
+    // request a withdraw
+    logger.info(options);
+    blinktrade.requestWithdraw(options).then(function(withdrawal) {
+      logger.info(withdrawal);
+      res.json(withdrawal);
+    })
+    .catch(function(err) {
+        logger.error(err);
+    });
+});
 
 app.get('/', function(req, res) {
     res.json({
@@ -122,7 +152,7 @@ blinktrade
     .connect()
     // run a heartbeat
     .then(function() {
-        // every heartbeat, run a heartbeat
+        // every heartbeat, run log the heart
         return heart.createEvent(1, function(heartbeat, last) {
             blinktrade.heartbeat()
                 .then(function(beat) {
@@ -160,18 +190,6 @@ blinktrade
         app.listen(port, function() {
             logger.info('HTTP server running on PORT ' + port);
         });
-        // blinktrade.requestWithdraw({
-        //     "amount": parseInt(1200 * 1e8),
-        //     "currency": "PKR",
-        //     "method": "BankIslami",
-        //     "data": {
-        //         "AccountName": "A Girl Is No One",
-        //         "AccountNumber": "123477",
-        //         "Fees": "2"
-        //     }
-        // });
-        //
-        //
     }).catch(function(err) {
         logger.error(err);
     });
