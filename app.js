@@ -112,7 +112,7 @@ app.post('/order', function(req, res) {
 });
 
 app.post('/withdraw', function(req, res) {
-    var amount = req.body.amount;
+    var amount = parseInt(req.body.amount);
     var bankName = req.body.bank_name;
     var accountNumber = req.body.account_number;
     var accountTitle = req.body.account_title;
