@@ -134,12 +134,12 @@ app.post('/withdraw', function(req, res) {
     // request a withdraw
     logger.info(options);
     blinktrade.requestWithdraw(options).then(function(withdrawal) {
-      logger.info(withdrawal);
-      res.json(withdrawal);
-    })
-    .catch(function(err) {
-        logger.error(err);
-    });
+            logger.info(withdrawal);
+            res.json(withdrawal);
+        })
+        .catch(function(err) {
+            logger.error(err);
+        });
 });
 
 app.get('/', function(req, res) {
@@ -186,6 +186,12 @@ blinktrade
             }).on("EXECUTION_REPORT:REJECTED", function(data) {
                 logger.debug(data);
             });
+
+        blinktrade.onWithdrawRefresh(function(withdraw) {
+            logger.info(withdraw);
+            sendNotification('WITHDRAW_REFRESH', withdraw);
+        });
+
 
         app.listen(port, function() {
             logger.info('HTTP server running on PORT ' + port);
